@@ -176,11 +176,48 @@ var moves = {
   // This hero will try really hard not to die.
   coward : function(gameData, helpers) {
     return helpers.findNearestHealthWell(gameData);
-  }
- };
+  },
+  
+  //The 'Team Player'
+  //Stays close to friendly hero. Will attack if enemy comes within 3 tiles distance. Overrides if health drops below <40.
+  //If no other action viable. Will move towards closest enemy diamond mine.
+  
+  teamplayer : function(gameData, helpers) {
+	var myHero = gameData.activeHero;
+	
+	//Get info on nearest friendly unit
+	var nearestFriend = helpers.findNearestObjectDirectionAndDistance(gameData.board, myHero, function(heroTile) {
+		if (heroTile.type === 'Hero' && heroTile.team == hero.team) {
+			return true;
+		}
+	});
+	
+	var distanceToNearestFriend = nearestFriend.distance;
+	var directionToNearestFriend = nearestFriend.direction;
+	
+	//Get info on nearest enemy unit
+	var nearestEnemy = helpers.findNearestObjectDirectionAndDistance(gameData.board, myHero, function(enemyTile) {
+		if (enemyTile.type === 'Hero' && heroTile.team !== hero.team) {
+			return true;
+		}
+	});
+	
+	var distanceToNearestEnemy = nearestEnemy.distance;
+	var directionToNearestEnemy = nearestEnemy.direction;
+	
+	if (myHero.health < 40) {
+		return helpers.findNearestHealthWell(gameData);
+	} else if (distanceToNearestFriend > 4) {
+		return directionToNearestFriend;
+	} else if (distanceToNearestEnemy < 3) {
+		return directionToNearestEnemy;
+	} else { return helpers.findNearestUnownedDiamondMine(gameData); }
+	}
+ 
+ }
 
 //  Set our heros strategy
-var  move =  moves.aggressor;
+var  move =  moves.teamplayer;
 
 // Export the move function here
 module.exports = move;
