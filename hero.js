@@ -212,12 +212,35 @@ var moves = {
 	} else if (distanceToNearestEnemy < 3) {
 		return directionToNearestEnemy;
 	} else { return helpers.findNearestUnownedDiamondMine(gameData); }
+	},
+
+//The 'Pragmatist'	
+//Capture diamond mines, kill weak enemy hero's, stay above 70 health
+
+  pragmatist : function(gameData, helpers) {
+	var myHero = gameData.activeHero;
+		
+	//Scan for nearby weak enemy hero's
+	var nearestWeakEnemy = helpers.findNearestObjectDirectionAndDistance(gameData.board, myHero, function(enemyTile) {
+		if (enemyTile.type === 'Hero' && heroTile.team !== hero.team && enemyTile.health < 50) {
+			return true;
+		}
+	});
+	
+	var distanceToNearestWeakling = nearestWeakEnemy.distance;
+	var directionToNearestWeakling = nearestWeakEnemy.direction;
+	
+	if (myHero.health < 70) {
+		return helpers.findNearestHealthWell(gameData);
+	} else if (distanceToNearestWeakling < 3) {
+		return directionToNearestWeakling;
+	} else {
+		return helpers.findNearestNonTeamDiamondMine(gameData); }	
 	}
- 
- }
+}
 
 //  Set our heros strategy
-var  move =  moves.teamplayer;
+var move =  moves.pragmatist;
 
 // Export the move function here
 module.exports = move;
