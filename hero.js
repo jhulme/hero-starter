@@ -211,7 +211,7 @@ var moves = {
 		return directionToNearestFriend;
 	} else if (distanceToNearestEnemy < 3) {
 		return directionToNearestEnemy;
-	} else { return helpers.findNearestUnownedDiamondMine(gameData); }
+	} else { return helpers.findNearestNonTeamDiamondMine(gameData); }
 	},
 
 //The 'Pragmatist'	
